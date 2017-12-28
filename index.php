@@ -1,0 +1,242 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Тестовое</title>
+	<script type="text/javascript" src="plugins/jquery/jquery-3.2.1.js"></script>
+	<style type="text/css">
+		body {
+			background-color: white;
+		}
+		#task {
+			text-align: center;
+			font-size: 40px;
+			font-weight: bold;
+			margin: 20px;
+		}
+		#summand1, #summand2 {
+			padding: 0px 4px;
+    		border-radius: 4px;
+		}
+		#helper {
+			/*text-align: center;*/
+		}
+		#helper div {
+			width: 875px;
+			margin: 0 auto;
+   			position: relative;
+		}
+		#canvas {
+			display: block;
+			position: absolute;
+			left: 0px;
+			top: 20px;
+		}
+		#helper img {
+			margin-top: 100px;
+		}
+		input {
+			border-radius: 5px;
+			position: absolute;
+			text-align: center;
+			border: none;
+			background-color: transparent;
+		}
+		#helper input:focus {
+			outline: none;
+		}
+		#fst_input, #scnd_input {
+			border: 2px solid #bcbcbc;
+			width: 25px;
+			height: 30px;
+			font-size: 20px;
+			box-sizing: border-box;
+			visibility: hidden;
+		}
+		#thrd_input {
+			width: 30px;
+			height: 50px;
+			font-size: 40px;
+			font-family: sans-serif;
+			box-sizing: border-box;
+			font-weight: bold;
+			background-color: transparent;
+			color: black;
+		}
+	</style>
+</head>
+<body>
+	<div id="task">
+		<span id="summand1"></span>
+		<span>+</span>
+		<span id="summand2"></span>
+		<span>=&nbsp;</span>
+		<input id="thrd_input" value="?" type="text" disabled />
+	</div>
+	
+	<div id="helper">
+		<div style="width: 875px">
+			<img src="sprite.png" />
+			<canvas id="canvas" width="875" height="100"></canvas>
+			<input id="fst_input" type="text" />
+			<input id="scnd_input" type="text" />
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+			// CANVAS INIT			
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
+			ctx.lineCap = "round";
+			ctx.lineWidth = 2;
+			ctx.strokeStyle = "#c9729f";
+			
+			//==============================================================================================================
+			// STAGE 1
+			//==============================================================================================================
+			var summand1 = 6 + Math.round(Math.random()*3);
+			var summ = 11 + Math.round(Math.random()*3); 
+			var summand2 = summ - summand1;
+			$("#summand1").text(summand1);
+			$("#summand2").text(summand2);
+			
+			var startNum = 0;
+			var endNum = summand1;
+			var topCoord = drawArrow(startNum, endNum);
+			
+			// HALF OF INPUT'S DIMENSIONS
+			var xOffset = ($("#fst_input").css("width").replace("px", "")) / 2;
+			var yOffset = ($("#fst_input").css("height").replace("px", "")) / 2;
+			
+			$("#fst_input").css({
+				left: Math.round(topCoord["x"] - xOffset), 
+				top: Math.round(topCoord["y"] - yOffset), 
+				visibility: "visible"
+			}).click(function() {
+				if (!$("#scnd_input").attr("disabled")) {
+					$("#fst_input").prop("value", "").css({color: "black"});
+				}
+			}).on("input", function() {
+				var value = $("#fst_input").prop("value");
+				if ((/^[0-9]$/.test(value)) && (parseInt(value) === summand1)) {
+					$("#summand1").css({backgroundColor: ""});
+					$("#fst_input").css({border: "none", color: "black"}).attr("disabled", "disabled");
+					st2();
+				} else {
+					$("#summand1").css({backgroundColor: "#fba848"});
+					$("#fst_input").css({color: "red", fontWeight: "bold"});
+				}
+				$("#fst_input").blur();
+			});
+			
+			//==============================================================================================================
+			// STAGE 2
+			//==============================================================================================================
+			function st2() {
+				var startNum = summand1;
+				var endNum = summand2;
+				var topCoord = drawArrow(startNum, summ);
+				
+				$("#scnd_input").css({
+					left: Math.round(topCoord["x"] - xOffset), 
+					top: Math.round(topCoord["y"] - yOffset), 
+					visibility: "visible"
+				}).click(function() {
+					if (!$("#scnd_input").attr("disabled")) {
+						$("#scnd_input").prop("value", "").css({color: "black"});
+					}
+				}).on("input", function() {
+					var value = $("#scnd_input").prop("value");
+					if ((/^[0-9]$/.test(value)) && (parseInt(value) === summand2)) {
+						$("#summand2").css({backgroundColor: ""});
+						$("#scnd_input").css({border: "none", color: "black"}).attr("disabled", "disabled");
+						st3();
+					} else {
+						$("#scnd_input").css({color: "red", fontWeight: "bold"});
+					}
+					$("#scnd_input").blur();
+				});
+			}
+			
+			//==============================================================================================================
+			// STAGE 3
+			//==============================================================================================================
+			function st3() {
+				$("#thrd_input").removeAttr("disabled").css({border: "2px solid #bcbcbc", width: "55px"}).prop("value", "").click(function() {
+					if (!$("#thrd_input").attr("disabled")) {
+						$("#thrd_input").prop("value", "").css({color: "black"});
+					}
+				}).on("input", function() {
+					var value = $("#thrd_input").prop("value");
+					if (/^[0-9]$/.test(value)) return;
+					if ((/[0-9]{2}/.test(value)) && (parseInt(value) === summ)) {
+						$("#thrd_input").css({border: "none", color: "black"}).attr("disabled", "disabled");
+					} else {
+						$("#thrd_input").css({color: "red", fontWeight: "bold"});
+					}
+					$("#thrd_input").blur();
+				});;
+			}
+			
+			function drawArrow(pStartNum, pEndNum) {
+				
+				// POINTS CALC
+				var ptPerNum = 39;
+				var points = [];
+				var canvasHeight = 100;
+				var leftOffset = 35;
+				var n = 50;
+				var xMax = (ptPerNum * (pEndNum - pStartNum)) / 2;
+				var arrowLength = xMax * 2;
+				var r = arrowLength/1.7;
+				var yMax = Math.sqrt(r*r);// + ctx.lineWidth
+				var yMin = Math.sqrt(r*r - xMax*xMax);
+				
+				for (var i = 0; i <= n; i++) {
+
+					// RAW COORDS
+					var x = -xMax + i*xMax*2/n;
+					var y = Math.sqrt(r*r - x*x);
+
+					// FORMAT COORDS
+					x += xMax + leftOffset + pStartNum * ptPerNum;
+					y = -y + yMin + canvasHeight;
+
+					points.push({x: x, y: y});
+
+					if (i === n) {
+						points.push({x: x - 1, y: y - 9});
+						points.push({x: x, y: y});
+						points.push({x: x - 8, y: y - 4});
+					}
+				}
+
+				var t = 1;// ELAPSED FRAMES
+				animate();
+
+				window.lastTime = 0;
+				function animate() {
+					if (t < points.length - 1) {
+						var currTime = (new Date()).getTime();
+						var timeToCall = Math.max(0, 16 - (currTime - window.lastTime));
+						window.setTimeout(function () {
+							animate();
+						}, timeToCall);
+						window.lastTime = currTime + timeToCall;
+					}
+					ctx.beginPath();
+					ctx.moveTo(points[t - 1].x, points[t - 1].y);
+					ctx.lineTo(points[t].x, points[t].y);
+					ctx.stroke();
+					t++;
+				}
+				
+				var topX = leftOffset + pStartNum * ptPerNum + arrowLength / 2;//yMin yMax canvasHeight;
+				var topY = canvasHeight - (yMax - yMin);
+				return {x: topX, y: topY};
+			}
+		});
+	</script>
+</body>
+</html>
