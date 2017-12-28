@@ -4,66 +4,7 @@
 	<meta charset="utf-8">
 	<title>Тестовое</title>
 	<script type="text/javascript" src="plugins/jquery/jquery-3.2.1.js"></script>
-	<style type="text/css">
-		body {
-			background-color: white;
-		}
-		#task {
-			text-align: center;
-			font-size: 40px;
-			font-weight: bold;
-			margin: 20px;
-		}
-		#summand1, #summand2 {
-			padding: 0px 4px;
-    		border-radius: 4px;
-		}
-		#helper {
-			/*text-align: center;*/
-		}
-		#helper div {
-			width: 875px;
-			margin: 0 auto;
-   			position: relative;
-		}
-		#canvas {
-			display: block;
-			position: absolute;
-			left: 0px;
-			top: 20px;
-		}
-		#helper img {
-			margin-top: 100px;
-		}
-		input {
-			border-radius: 5px;
-			position: absolute;
-			text-align: center;
-			border: none;
-			background-color: transparent;
-		}
-		#helper input:focus {
-			outline: none;
-		}
-		#fst_input, #scnd_input {
-			border: 2px solid #bcbcbc;
-			width: 25px;
-			height: 30px;
-			font-size: 20px;
-			box-sizing: border-box;
-			visibility: hidden;
-		}
-		#thrd_input {
-			width: 30px;
-			height: 50px;
-			font-size: 40px;
-			font-family: sans-serif;
-			box-sizing: border-box;
-			font-weight: bold;
-			background-color: transparent;
-			color: black;
-		}
-	</style>
+	<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 	<div id="task">
@@ -75,7 +16,7 @@
 	</div>
 	
 	<div id="helper">
-		<div style="width: 875px">
+		<div>
 			<img src="sprite.png" />
 			<canvas id="canvas" width="875" height="100"></canvas>
 			<input id="fst_input" type="text" />
@@ -83,6 +24,7 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+		
 		$(document).ready(function() {
 
 			// CANVAS INIT			
@@ -153,6 +95,7 @@
 						$("#scnd_input").css({border: "none", color: "black"}).attr("disabled", "disabled");
 						st3();
 					} else {
+						$("#summand2").css({backgroundColor: "#fba848"});
 						$("#scnd_input").css({color: "red", fontWeight: "bold"});
 					}
 					$("#scnd_input").blur();
@@ -232,7 +175,7 @@
 					t++;
 				}
 				
-				var topX = leftOffset + pStartNum * ptPerNum + arrowLength / 2;//yMin yMax canvasHeight;
+				var topX = leftOffset + pStartNum * ptPerNum + arrowLength / 2;
 				var topY = canvasHeight - (yMax - yMin);
 				return {x: topX, y: topY};
 			}
